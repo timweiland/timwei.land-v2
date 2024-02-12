@@ -14,12 +14,12 @@ status:
 superuser: true
 
 # Role/position/tagline
-role: Research Scientist
+role: PhD student
 
 # Organizations/Affiliations to show in About widget
 organizations:
-  - name: University of Tübingen
-    url: https://uni-tuebingen.de
+  - name: Methods of Machine Learning @ Uni Tübingen
+    url: https://uni-tuebingen.de/en/fakultaeten/mathematisch-naturwissenschaftliche-fakultaet/fachbereiche/informatik/lehrstuehle/methods-of-machine-learning/start/
 
 # Short bio (displayed in user profile at end of posts)
 bio: Interested in fundamental machine learning research. I like math and software engineering and believe that both are crucial to build better algorithms.
