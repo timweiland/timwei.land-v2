@@ -3,6 +3,7 @@ title = "Why Maximum Likelihood works"
 author = ["Tim Weiland"]
 date = 2020-11-20
 tags = ["statistics", "machine_learning"]
+summary = "An intuitive explanation of why maximum likelihood estimation works, using the Kullback-Leibler divergence to provide theoretical grounding for this fundamental statistical method."
 draft = false
 +++
 

@@ -4,7 +4,7 @@
 # This file is formatted using YAML syntax - learn more at https://learnxinyminutes.com/docs/yaml/
 
 title: Tim Weiland # Website name
-baseURL: 'https://example.com/' # Website URL
+baseURL: 'https://timwei.land/' # Website URL
 
 ############################
 ## LANGUAGE
@@ -69,6 +69,8 @@ related:
 security:
   _merge: deep
 sitemap:
-  _merge: deep
+  changefreq: monthly
+  priority: 0.5
+  filename: sitemap.xml
 minify:
   _merge: deep

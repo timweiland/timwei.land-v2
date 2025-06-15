@@ -1,0 +1,26 @@
+User-agent: *
+Allow: /
+
+# Sitemaps
+Sitemap: {{ .Site.BaseURL }}sitemap.xml
+
+# Google Scholar bot (important for academic sites)
+User-agent: Scholar
+Allow: /
+
+# Allow all search engines to crawl academic content
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Slurp
+Allow: /
+
+# Prevent crawling of certain paths if needed
+# Disallow: /admin/
+# Disallow: /private/
+
+# Crawl delay (optional - be gentle with server resources)
+Crawl-delay: 1

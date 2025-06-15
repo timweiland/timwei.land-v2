@@ -1,0 +1,284 @@
+{{ define "main" }}
+<article class="post-single">
+    <header class="post-header">
+        <div class="title-row">
+            <h1 class="post-title">{{ .Title }}</h1>
+            <span class="reading-time">{{ .ReadingTime }} min read</span>
+        </div>
+        
+        <div class="post-meta">
+            <div class="meta-left">
+                <time class="post-date">{{ .Date.Format "2006-01-02 15:04" }}</time>
+                {{ if .Params.authors }}
+                <span class="post-author">by {{ delimit .Params.authors ", " }}</span>
+                {{ end }}
+            </div>
+            
+            {{ if .Params.tags }}
+            <div class="post-tags">
+                {{ range .Params.tags }}
+                <span class="tag">{{ . }}</span>
+                {{ end }}
+            </div>
+            {{ end }}
+        </div>
+    </header>
+    
+    {{ partial "toc.html" . }}
+    
+    <div class="post-content">
+        {{ .Content }}
+    </div>
+    
+    <footer class="post-footer">
+        <div class="post-nav">
+            {{ with .PrevInSection }}
+            <a href="{{ .RelPermalink }}" class="post-nav-link post-nav-prev">
+                <span class="nav-direction">← Previous</span>
+                <span class="nav-title">{{ .Title }}</span>
+            </a>
+            {{ end }}
+            
+            {{ with .NextInSection }}
+            <a href="{{ .RelPermalink }}" class="post-nav-link post-nav-next">
+                <span class="nav-direction">Next →</span>
+                <span class="nav-title">{{ .Title }}</span>
+            </a>
+            {{ end }}
+        </div>
+        
+        <div class="back-to-posts">
+            <a href="/post/" class="back-link">← Back to Posts</a>
+        </div>
+    </footer>
+</article>
+
+<style>
+.post-single {
+    max-width: none; /* Use full terminal width */
+}
+
+.post-header {
+    margin-bottom: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid rgba(235, 219, 178, 0.1);
+}
+
+
+.title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.post-title {
+    font-size: 2.5rem;
+    line-height: 1.2;
+    margin: 0;
+    color: var(--fg-light);
+}
+
+.reading-time {
+    color: var(--accent-blue);
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    background-color: rgba(131, 165, 152, 0.1);
+    padding: 0.2rem 0.5rem;
+    border-radius: 3px;
+    border: 1px solid rgba(131, 165, 152, 0.3);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    white-space: nowrap;
+    
+    &::before {
+        content: "⏱";
+        font-size: 0.7rem;
+    }
+}
+
+.post-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.875rem;
+    color: var(--fg-dark);
+}
+
+.meta-left {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.post-date {
+    font-family: var(--font-mono);
+}
+
+.post-tags {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    
+    .tag {
+        background-color: rgba(131, 165, 152, 0.2);
+        color: var(--accent-blue);
+        padding: 0.2rem 0.5rem;
+        border-radius: 3px;
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+    }
+}
+
+.post-content {
+    line-height: 1.8;
+    max-width: 800px; /* Constrain text for readability */
+    margin: 0 auto;
+    
+    @media (min-width: 1200px) {
+        margin-right: 320px; /* Make space for TOC */
+    }
+    
+    h2, h3, h4, h5, h6 {
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+        
+        &:first-child {
+            margin-top: 0;
+        }
+    }
+    
+    p {
+        margin-bottom: 1.5rem;
+    }
+    
+    img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 6px;
+        margin: 1.5rem 0;
+    }
+    
+    blockquote {
+        margin: 1.5rem 0;
+        padding: 1rem 1.5rem;
+        background-color: var(--bg-light);
+        border-left: 4px solid var(--accent-yellow);
+        border-radius: 0 6px 6px 0;
+        
+        p:last-child {
+            margin-bottom: 0;
+        }
+    }
+    
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1.5rem 0;
+        
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(235, 219, 178, 0.1);
+        }
+        
+        th {
+            background-color: var(--bg-light);
+            font-weight: 600;
+            color: var(--fg-light);
+        }
+    }
+}
+
+.post-footer {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(235, 219, 178, 0.1);
+}
+
+.post-nav {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.post-nav-link {
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+    background-color: var(--bg-light);
+    border-radius: 6px;
+    transition: background-color 0.2s ease;
+    
+    &:hover {
+        background-color: rgba(250, 189, 47, 0.05);
+        text-decoration: none;
+    }
+    
+    &.post-nav-next {
+        text-align: right;
+    }
+}
+
+.nav-direction {
+    font-size: 0.875rem;
+    color: var(--accent-yellow);
+    margin-bottom: 0.5rem;
+}
+
+.nav-title {
+    color: var(--fg-light);
+    font-weight: 500;
+}
+
+.back-to-posts {
+    text-align: center;
+    
+    .back-link {
+        color: var(--accent-yellow);
+        padding: 0.75rem 1.5rem;
+        background-color: var(--bg-light);
+        border-radius: 6px;
+        display: inline-block;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        font-weight: 500;
+        
+        &:hover {
+            background-color: var(--accent-yellow);
+            color: var(--bg-dark);
+            transform: translateY(-2px);
+        }
+    }
+}
+
+@media (max-width: 768px) {
+    .title-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+    
+    .post-title {
+        font-size: 2rem;
+    }
+    
+    .post-meta {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    
+    .post-nav {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .post-nav-link.post-nav-next {
+        text-align: left;
+    }
+}
+</style>
+{{ end }}

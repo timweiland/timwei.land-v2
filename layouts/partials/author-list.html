@@ -1,0 +1,40 @@
+{{/* Author list partial - highlights the site author's name and handles author URLs */}}
+{{ $authors := .authors }}
+{{ $authorUrls := .author_urls }}
+{{ $siteAuthor := .Site.GetPage "/authors/admin" }}
+{{ $authorName := $siteAuthor.Title }}
+
+{{ range $index, $author := $authors }}
+  {{ if gt $index 0 }}, {{ end }}
+  
+  {{/* Check if this author has a URL */}}
+  {{ $hasUrl := false }}
+  {{ $authorUrl := "" }}
+  {{ if $authorUrls }}
+    {{ range $authorUrls }}
+      {{ if eq .name $author }}
+        {{ $hasUrl = true }}
+        {{ $authorUrl = .url }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+  
+  {{/* Render the author with appropriate styling and linking */}}
+  {{ if eq $author $authorName }}
+    {{/* Site author - highlighted */}}
+    {{ if $hasUrl }}
+      <a href="{{ $authorUrl }}" target="_blank" rel="noopener" class="author-link">
+        <span class="author-highlight">{{ $author }}</span>
+      </a>
+    {{ else }}
+      <span class="author-highlight">{{ $author }}</span>
+    {{ end }}
+  {{ else }}
+    {{/* Other authors */}}
+    {{ if $hasUrl }}
+      <a href="{{ $authorUrl }}" target="_blank" rel="noopener" class="author-link">{{ $author }}</a>
+    {{ else }}
+      {{ $author }}
+    {{ end }}
+  {{ end }}
+{{ end }}

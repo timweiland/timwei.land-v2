@@ -1,0 +1,17 @@
+<header class="terminal-header-content">
+    <div class="site-title">
+        <a href="/" class="site-title-link">{{ .Site.Title }}</a>
+    </div>
+    
+    <nav class="terminal-nav">
+        <ul class="nav-list">
+            {{ range .Site.Menus.main }}
+            <li class="nav-item">
+                <a href="{{ .URL | absURL }}" class="nav-link">
+                    {{ .Name }}
+                </a>
+            </li>
+            {{ end }}
+        </ul>
+    </nav>
+</header>

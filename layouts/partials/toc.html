@@ -1,0 +1,22 @@
+{{ if .TableOfContents }}
+<div class="toc-container">
+    <div class="toc-header">
+        <span class="toc-prompt">tim@timwei.land:~$</span> <span class="toc-command">tree {{ .Title | lower | replaceRE "[^a-z0-9]+" "-" }}.md</span>
+    </div>
+    <nav class="table-of-contents" id="toc">
+        <div class="toc-title">
+            <span class="toc-icon">📋</span>
+            <span class="toc-text">Table of Contents</span>
+        </div>
+        <div class="toc-content">
+            {{ .TableOfContents }}
+        </div>
+        <div class="toc-progress">
+            <div class="progress-bar">
+                <div class="progress-fill" id="toc-progress"></div>
+            </div>
+            <span class="progress-text" id="toc-progress-text">0%</span>
+        </div>
+    </nav>
+</div>
+{{ end }}

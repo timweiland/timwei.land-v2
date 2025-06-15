@@ -1,0 +1,30 @@
+items:
+  - date: "2025-05-04"
+    type: "conference"
+    icon: "🏖️"
+    title: "Attending AISTATS in Mai Khao to talk about our work on GMRFs for PDEs."
+
+  - date: "2025-03-01"
+    type: "academic"
+    icon: "🇫🇮"
+    title: "I started my six month visit to Simo Särkkä's lab at Aalto University."
+
+  - date: "2025-02-21"
+    type: "academic"
+    icon: "🎒"
+    title: "Tobias Weber and I organized a seminar on Physics-Informed ML. Check out the results here: https://github.com/ClimatePDE/physics-informed-machine-learning"
+
+  - date: "2025-01-31"
+    type: "talk"
+    icon: "📢"
+    title: "I gave a talk at Oberwolfach on probabilistic PDE solvers."
+
+  - date: "2025-01-23"
+    type: "publication"
+    icon: "📝"
+    title: "Our AISTATS submission on GMRFs for PDEs got accepted!"
+    
+  #- date: "2024-08-05"
+    #type: "professional"
+    #icon: "💼"
+    #title: "Started research internship at DeepMind"

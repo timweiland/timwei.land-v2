@@ -3,6 +3,7 @@ title = "Finding Important Words: tf-idf"
 author = ["Tim Weiland"]
 date = 2021-04-18
 tags = ["statistics", "machine_learning", "nlp"]
+summary = "Learn how tf-idf combines term frequency and inverse document frequency to identify the most important words in a document by balancing local relevance with global rarity."
 draft = false
 +++
 

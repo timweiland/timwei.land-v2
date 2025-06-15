@@ -1,0 +1,388 @@
+{{ with .Site.GetPage "/authors/admin" }}
+<div class="neofetch-bio">
+    <div class="neofetch-content">
+        <div class="neofetch-avatar">
+            <div class="avatar-container">
+                <img id="avatar-source" src="{{ .Params.avatar | default "authors/admin/avatar.jpg" }}" alt="Avatar" style="display: none;">
+                <div id="ascii-avatar" class="ascii-art"></div>
+                <div class="avatar-fallback">
+                    <img src="{{ .Params.avatar | default "authors/admin/avatar.jpg" }}" alt="{{ .Title }}" class="fallback-image">
+                </div>
+            </div>
+        </div>
+        
+        <div class="neofetch-info">
+            <div class="neofetch-header">
+                <span class="username">{{ .Params.first_name | lower }}@timwei.land</span>
+            </div>
+            <div class="neofetch-separator">─────────────────</div>
+            
+            <div class="info-line">
+                <span class="info-label">Name</span>
+                <span class="info-value typing-text" data-text="{{ .Title }}"></span>
+            </div>
+            
+            <div class="info-line">
+                <span class="info-label">Status</span>
+                <span class="info-value">{{ .Params.role }} {{ .Params.status.icon }}</span>
+            </div>
+            
+            {{ if .Params.organizations }}
+            <div class="info-line">
+                <span class="info-label">{{ if gt (len .Params.organizations) 1 }}Affiliations{{ else }}Affiliation{{ end }}</span>
+                <span class="info-value">
+                    {{ range $index, $org := .Params.organizations }}
+                    {{ if gt $index 0 }}<br>{{ end }}
+                    {{ if $org.url }}
+                    <a href="{{ $org.url }}" target="_blank" rel="noopener" class="affiliation-link">{{ $org.name }}</a>
+                    {{ else }}
+                    {{ $org.name }}
+                    {{ end }}
+                    {{ end }}
+                </span>
+            </div>
+            {{ end }}
+            
+            <div class="info-line">
+                <span class="info-label">Research</span>
+                <span class="info-value">Scalable Probabilistic PDE solvers</span>
+            </div>
+            
+            {{ if .Params.education }}
+            <div class="info-line">
+                <span class="info-label">Education</span>
+                <span class="info-value">{{ range first 1 .Params.education.courses }}{{ .course }}, {{ .institution }} ({{ .year }}){{ end }}</span>
+            </div>
+            {{ end }}
+            
+            <div class="info-line">
+                <span class="info-label">Interests</span>
+                <span class="info-value">
+                    {{ if .Params.interests }}
+                    {{ delimit .Params.interests ", " }}
+                    {{ end }}
+                </span>
+            </div>
+            
+            {{ if .Params.tech_stack }}
+            <div class="info-line">
+                <span class="info-label">Stack</span>
+                <span class="info-value">{{ delimit .Params.tech_stack ", " }}</span>
+            </div>
+            {{ end }}
+            
+            <div class="info-line">
+                <span class="info-label">Focus</span>
+                <span class="info-value">Fundamental ML research & scalable algorithms</span>
+            </div>
+            
+            <div class="info-line">
+                <span class="info-label">Theme</span>
+                <span class="info-value">Gruvbox [Terminal Scholar]</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ASCII Art Generator Script -->
+<script>
+class ColoredASCII {
+    constructor() {
+        this.chars = ' .:-=+*#%@';
+    }
+    
+    rgbToHex(r, g, b) {
+        return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+    }
+    
+    imageToColoredASCII(img, width = 60, height = 30) {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        canvas.width = width;
+        canvas.height = height;
+        
+        // Draw and scale image
+        ctx.drawImage(img, 0, 0, width, height);
+        
+        const imageData = ctx.getImageData(0, 0, width, height);
+        const pixels = imageData.data;
+        
+        let asciiHtml = '';
+        for (let y = 0; y < height; y++) {
+            for (let x = 0; x < width; x++) {
+                const offset = (y * width + x) * 4;
+                const r = pixels[offset];
+                const g = pixels[offset + 1];
+                const b = pixels[offset + 2];
+                
+                // Convert to grayscale for character selection
+                const gray = Math.round(0.299 * r + 0.587 * g + 0.114 * b);
+                
+                // Map to character
+                const charIndex = Math.floor((gray / 255) * (this.chars.length - 1));
+                const char = this.chars[charIndex];
+                
+                // Use original colors but make them warmer/more pleasant
+                const warmR = Math.min(255, r + 20);
+                const warmG = Math.min(255, g + 10);
+                const warmB = Math.max(0, b - 10);
+                
+                const color = this.rgbToHex(warmR, warmG, warmB);
+                
+                if (char === ' ') {
+                    asciiHtml += char;
+                } else {
+                    asciiHtml += `<span style="color: ${color}">${char}</span>`;
+                }
+            }
+            asciiHtml += '\n';
+        }
+        
+        return asciiHtml;
+    }
+}
+
+// Initialize ASCII art when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    const img = document.getElementById('avatar-source');
+    const asciiContainer = document.getElementById('ascii-avatar');
+    const fallbackContainer = document.querySelector('.avatar-fallback');
+    
+    if (!img || !asciiContainer) return;
+    
+    img.onload = function() {
+        try {
+            const ascii = new ColoredASCII();
+            const asciiHtml = ascii.imageToColoredASCII(img, 60, 35);
+            
+            asciiContainer.innerHTML = asciiHtml;
+            asciiContainer.style.display = 'block';
+            fallbackContainer.style.display = 'none';
+        } catch (error) {
+            console.log('ASCII conversion failed, using fallback image');
+            fallbackContainer.style.display = 'block';
+            asciiContainer.style.display = 'none';
+        }
+    };
+    
+    img.onerror = function() {
+        fallbackContainer.style.display = 'block';
+        asciiContainer.style.display = 'none';
+    };
+    
+    // Trigger load if image is already cached
+    if (img.complete) {
+        img.onload();
+    }
+});
+
+// Terminal typing animation
+function typeText(element, text, speed = 80) {
+    element.textContent = '';
+    let i = 0;
+    const cursor = document.createElement('span');
+    cursor.className = 'typing-cursor';
+    cursor.textContent = '▌';
+    element.appendChild(cursor);
+    
+    function typeChar() {
+        if (i < text.length) {
+            element.insertBefore(document.createTextNode(text.charAt(i)), cursor);
+            i++;
+            setTimeout(typeChar, speed + Math.random() * 40); // Slight randomness for natural feel
+        } else {
+            // Blink cursor a few times then remove
+            setTimeout(() => {
+                cursor.style.animation = 'blink 0.7s infinite';
+                setTimeout(() => cursor.remove(), 3000);
+            }, 500);
+        }
+    }
+    
+    setTimeout(typeChar, 800); // Initial delay to let avatar load
+}
+
+// Start typing animation when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    const typingElements = document.querySelectorAll('.typing-text');
+    typingElements.forEach((element, index) => {
+        const text = element.getAttribute('data-text');
+        if (text) {
+            setTimeout(() => typeText(element, text), index * 1200); // Stagger animations
+        }
+    });
+});
+</script>
+
+<style>
+.neofetch-bio {
+    background-color: var(--bg-light);
+    border-radius: 8px;
+    padding: 2.5rem;
+    margin: 2rem 0;
+    border-left: 4px solid var(--accent-yellow);
+    font-family: var(--font-mono);
+    overflow-x: auto;
+}
+
+.neofetch-content {
+    display: grid;
+    grid-template-columns: 250px 1fr;
+    gap: 7rem;
+    align-items: center;
+}
+
+.neofetch-avatar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    padding-left: 4rem; /* Much bigger space between avatar and yellow border */
+}
+
+.avatar-container {
+    position: relative;
+}
+
+.ascii-art {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.6rem;
+    line-height: 0.6rem;
+    white-space: pre;
+    text-align: center;
+    display: none;
+    max-height: 300px;
+    overflow: hidden;
+    /* Colors will be applied inline per character */
+}
+
+.fallback-image {
+    width: 180px;
+    height: 180px;
+    border-radius: 8px;
+    object-fit: cover;
+    border: 2px solid var(--accent-yellow);
+}
+
+.neofetch-info {
+    min-width: 0; /* Prevents overflow in grid */
+}
+
+.neofetch-header {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--accent-green);
+    margin-bottom: 0.5rem;
+}
+
+.neofetch-separator {
+    color: var(--fg-dark);
+    margin-bottom: 1rem;
+    font-size: 0.875rem;
+}
+
+.info-line {
+    display: flex;
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+}
+
+.info-label {
+    color: var(--accent-yellow);
+    min-width: 80px;
+    font-weight: 600;
+}
+
+.info-label::after {
+    content: ':';
+    margin-right: 0.5rem;
+    color: var(--fg-dark);
+}
+
+.info-value {
+    color: var(--fg-medium);
+    flex: 1;
+    word-wrap: break-word;
+}
+
+.typing-cursor {
+    color: var(--accent-yellow);
+    font-weight: bold;
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+}
+
+.affiliation-link {
+    color: var(--accent-blue);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.affiliation-link:hover {
+    color: var(--accent-yellow);
+    text-decoration: underline;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    .neofetch-bio {
+        padding: 1.5rem;
+    }
+    
+    .neofetch-content {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+        text-align: center;
+    }
+    
+    .ascii-art {
+        font-size: 0.4rem;
+        line-height: 0.4rem;
+        text-align: center;
+    }
+    
+    .neofetch-avatar {
+        padding-left: 0;
+        justify-content: center;
+    }
+    
+    .fallback-image {
+        width: 120px;
+        height: 120px;
+    }
+    
+    .info-line {
+        flex-direction: column;
+        text-align: left;
+    }
+    
+    .info-label {
+        min-width: auto;
+        margin-bottom: 0.25rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .neofetch-bio {
+        padding: 1rem;
+        margin: 1rem 0;
+    }
+    
+    .ascii-art {
+        font-size: 0.35rem;
+        line-height: 0.35rem;
+        text-align: center;
+    }
+    
+    .fallback-image {
+        width: 100px;
+        height: 100px;
+    }
+}
+</style>
+{{ end }}

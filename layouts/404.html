@@ -1,0 +1,154 @@
+{{ define "main" }}
+<div class="error-404">
+    <div class="terminal-prompt">
+        <span class="prompt-user">tim</span><span class="prompt-separator">@</span><span class="prompt-path">timwei.land</span><span class="prompt-symbol">$</span> <span class="prompt-command">cat <span id="requested-path">/unknown-path</span></span>
+    </div>
+    
+    <div class="error-output">
+        <div class="error-message">bash: <span id="requested-path-error">/unknown-path</span>: No such file or directory</div>
+    </div>
+    
+    <div class="error-content">
+        <h1 class="error-title">404 - Page Not Found</h1>
+        <p class="error-description">
+            The page you're looking for doesn't exist. Let's get you back on track.
+        </p>
+        
+        <div class="navigation-links">
+            <a href="/" class="nav-link primary">← Home</a>
+            <a href="/post/" class="nav-link">Blog</a>
+            <a href="/project/" class="nav-link">Projects</a>
+            {{ with .Site.GetPage "/publication" }}
+            <a href="{{ .RelPermalink }}" class="nav-link">Publications</a>
+            {{ end }}
+        </div>
+    </div>
+</div>
+
+<style>
+.error-404 {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.terminal-prompt {
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+    color: var(--fg-medium);
+    text-align: left;
+    
+    .prompt-user { color: var(--accent-green); font-weight: 600; }
+    .prompt-separator { color: var(--fg-medium); }
+    .prompt-path { color: var(--accent-blue); font-weight: 600; }
+    .prompt-symbol { color: var(--accent-yellow); font-weight: 600; }
+    .prompt-command { color: var(--fg-medium); }
+}
+
+.error-output {
+    margin-bottom: 3rem;
+}
+
+.error-message {
+    background-color: var(--bg-light);
+    padding: 1rem;
+    border-radius: 6px;
+    border-left: 3px solid var(--accent-red);
+    color: var(--accent-red);
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+}
+
+.error-content {
+    text-align: center;
+}
+
+.error-title {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: var(--fg-light);
+    font-family: var(--font-mono);
+}
+
+.error-description {
+    font-size: 1.1rem;
+    color: var(--fg-medium);
+    margin-bottom: 3rem;
+    line-height: 1.6;
+}
+
+.navigation-links {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.nav-link {
+    padding: 0.75rem 1.5rem;
+    background-color: var(--bg-light);
+    border: 1px solid rgba(235, 219, 178, 0.2);
+    border-radius: 6px;
+    color: var(--fg-medium);
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    font-family: var(--font-mono);
+    
+    &:hover {
+        background-color: var(--bg-medium);
+        border-color: var(--accent-yellow);
+        color: var(--accent-yellow);
+        transform: translateY(-1px);
+    }
+    
+    &.primary {
+        background-color: var(--accent-yellow);
+        color: var(--bg-dark);
+        border-color: var(--accent-yellow);
+        font-weight: 600;
+        
+        &:hover {
+            background-color: var(--accent-orange);
+            border-color: var(--accent-orange);
+            color: var(--bg-dark);
+        }
+    }
+}
+
+@media (max-width: 768px) {
+    .error-404 {
+        padding: 1rem;
+    }
+    
+    .error-title {
+        font-size: 2.5rem;
+    }
+    
+    .navigation-links {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .nav-link {
+        width: 100%;
+        max-width: 200px;
+        text-align: center;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Get the actual requested path from the URL
+    const requestedPath = window.location.pathname;
+    
+    // Update the terminal prompt and error message with the actual path
+    const pathElements = document.querySelectorAll('#requested-path, #requested-path-error');
+    pathElements.forEach(element => {
+        element.textContent = requestedPath;
+    });
+});
+</script>
+{{ end }}

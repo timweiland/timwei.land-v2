@@ -1,0 +1,598 @@
+{{ define "main" }}
+<div class="home-content">
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-full-width">
+            {{ partial "neofetch-bio.html" . }}
+        </div>
+        
+        {{ with .Site.GetPage "/authors/admin" }}
+        {{ if .Params.profiles }}
+        <div class="social-links">
+            {{ range .Params.profiles }}
+            <a href="{{ .url }}" class="social-link" target="_blank" rel="noopener">
+                {{ partial "icon.html" . }} {{ .label }}
+            </a>
+            {{ end }}
+        </div>
+        {{ end }}
+        {{ end }}
+    </section>
+    
+    <!-- News Feed Section -->
+    {{ partial "news-feed.html" . }}
+    
+    <!-- Featured Publications Section -->
+    {{ $publications := where .Site.RegularPages "Type" "publication" }}
+    {{ $featuredPubs := where $publications ".Params.featured" true }}
+    {{ if $featuredPubs }}
+    <section class="featured-publications">
+        <h2 class="section-heading">Featured Publications</h2>
+        
+        <div class="publications-grid">
+            {{ range first 3 $featuredPubs }}
+            <article class="publication-card">
+                <div class="publication-content">
+                    <h3 class="publication-title">
+                        <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+                    </h3>
+                    
+                    <div class="publication-meta">
+                        {{ if .Params.authors }}
+                        <div class="publication-authors">{{ partial "author-list.html" (dict "authors" .Params.authors "author_urls" .Params.author_urls "Site" .Site) }}</div>
+                        {{ end }}
+                        
+                        {{ if .Params.publication_short }}
+                        <div class="publication-venue">{{ .Params.publication_short | markdownify }} ({{ .Date.Format "2006" }})</div>
+                        {{ else if .Params.publication }}
+                        <div class="publication-venue">{{ .Params.publication | markdownify }} ({{ .Date.Format "2006" }})</div>
+                        {{ end }}
+                    </div>
+                    
+                    {{ if .Params.summary }}
+                    <p class="publication-summary">{{ .Params.summary }}</p>
+                    {{ else if .Summary }}
+                    <p class="publication-summary">{{ .Summary }}</p>
+                    {{ end }}
+                    
+                    <div class="publication-links">
+                        {{ if .Params.url_pdf }}
+                        <a href="{{ .Params.url_pdf }}" class="pub-link pdf-link" target="_blank" rel="noopener">
+                            <i class="fas fa-file-pdf"></i> PDF
+                        </a>
+                        {{ end }}
+                        
+                        {{ if .Params.url_code }}
+                        <a href="{{ .Params.url_code }}" class="pub-link code-link" target="_blank" rel="noopener">
+                            <i class="fab fa-github"></i> Code
+                        </a>
+                        {{ end }}
+                        
+                        {{ if .Params.url_source }}
+                        <a href="{{ .Params.url_source }}" class="pub-link source-link" target="_blank" rel="noopener">
+                            <i class="fas fa-external-link-alt"></i> Paper
+                        </a>
+                        {{ end }}
+                        
+                        {{ if .Params.doi }}
+                        <a href="https://doi.org/{{ .Params.doi }}" class="pub-link doi-link" target="_blank" rel="noopener">
+                            DOI
+                        </a>
+                        {{ end }}
+                        
+                        {{ $bibPath := printf "%s/cite.bib" .File.Dir }}
+                        {{ if (fileExists (printf "content/%s" $bibPath)) }}
+                        <button class="pub-link bibtex-link" onclick="showBibtexModal('{{ $bibPath }}', '{{ .Title | htmlEscape }}')">
+                            <i class="fas fa-quote-left"></i> Cite
+                        </button>
+                        {{ end }}
+                    </div>
+                    
+                    {{ if .Params.tags }}
+                    <div class="publication-tags">
+                        {{ range first 3 .Params.tags }}
+                        <span class="tag">{{ . }}</span>
+                        {{ end }}
+                    </div>
+                    {{ end }}
+                </div>
+            </article>
+            {{ end }}
+        </div>
+        
+        <div class="section-footer">
+            <a href="/publication/" class="view-all-link">View All Publications →</a>
+        </div>
+    </section>
+    {{ end }}
+    
+    <!-- Recent Posts Section -->
+    {{ $posts := where .Site.RegularPages "Type" "post" }}
+    {{ if $posts }}
+    <section class="recent-posts">
+        <h2 class="section-heading">Recent Posts</h2>
+        
+        <div class="posts-grid">
+            {{ range first 3 $posts }}
+            <article class="post-card">
+                <div class="title-row">
+                    <h3 class="post-title">
+                        <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+                    </h3>
+                    <span class="reading-time">{{ .ReadingTime }} min read</span>
+                </div>
+                <div class="post-meta">
+                    <time class="post-date">{{ .Date.Format "2006-01-02" }}</time>
+                    {{ if .Params.tags }}
+                    <div class="post-tags">
+                        {{ range first 3 .Params.tags }}
+                        <span class="tag">{{ . }}</span>
+                        {{ end }}
+                    </div>
+                    {{ end }}
+                </div>
+                <p class="post-summary">{{ if .Params.summary }}{{ .Params.summary }}{{ else }}{{ .Summary }}{{ end }}</p>
+            </article>
+            {{ end }}
+        </div>
+        
+        <div class="section-footer">
+            <a href="/post/" class="view-all-link">View All Posts →</a>
+        </div>
+    </section>
+    {{ end }}
+    
+    <!-- Recent Projects Section -->
+    {{ $projects := where .Site.RegularPages "Type" "project" }}
+    {{ $featuredProjects := where $projects ".Params.featured" true }}
+    {{ if $featuredProjects }}
+    <section class="recent-projects">
+        <h2 class="section-heading">Featured Projects</h2>
+        
+        <div class="projects-grid">
+            {{ range $featuredProjects }}
+            <article class="project-card">
+                {{ $featured := .Resources.GetMatch "featured*" }}
+                {{ if $featured }}
+                <div class="project-image">
+                    {{ if eq $featured.MediaType.SubType "svg" }}
+                    <img src="{{ $featured.RelPermalink }}" alt="{{ .Title }}" loading="lazy">
+                    {{ else }}
+                    <img src="{{ $featured.RelPermalink }}" alt="{{ .Title }}" loading="lazy">
+                    {{ end }}
+                </div>
+                {{ else if .Params.image }}
+                <div class="project-image">
+                    <img src="{{ .Params.image }}" alt="{{ .Title }}" loading="lazy">
+                </div>
+                {{ end }}
+                
+                <div class="project-content">
+                    <h3 class="project-title">
+                        <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+                    </h3>
+                    <p class="project-summary">{{ .Params.summary | default .Summary }}</p>
+                    
+                    {{ if .Params.tags }}
+                    <div class="project-tags">
+                        {{ range first 3 .Params.tags }}
+                        <span class="tag">{{ . }}</span>
+                        {{ end }}
+                    </div>
+                    {{ end }}
+                </div>
+            </article>
+            {{ end }}
+        </div>
+        
+        <div class="section-footer">
+            <a href="/project/" class="view-all-link">View All Projects →</a>
+        </div>
+    </section>
+    {{ end }}
+</div>
+
+<style>
+/* Home Page Specific Styles */
+.home-content {
+    max-width: none; /* Remove the constraint that's causing the right margin */
+}
+
+.hero-section {
+    margin-bottom: 4rem;
+    padding-bottom: 3rem;
+    border-bottom: 2px solid rgba(235, 219, 178, 0.1);
+}
+
+.hero-full-width {
+    /* Container for neofetch - now uses full width naturally */
+}
+
+
+.section-heading {
+    font-size: 2rem;
+    color: var(--fg-light);
+    margin-bottom: 2rem;
+    font-family: var(--font-mono);
+    text-align: center;
+}
+
+
+.social-links {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 2rem;
+    
+    .social-link {
+        padding: 0.75rem 1.25rem;
+        background-color: var(--bg-light);
+        border-radius: 6px;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        color: var(--fg-medium);
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        border: 1px solid transparent;
+        
+        &:hover {
+            background-color: var(--accent-yellow);
+            color: var(--bg-dark);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(250, 189, 47, 0.4);
+            border-color: rgba(250, 189, 47, 0.6);
+        }
+        
+        i {
+            font-size: 1.1rem;
+            width: 1.2rem;
+            text-align: center;
+        }
+        
+        .custom-icon {
+            width: 1.2rem;
+            height: 1.1rem;
+            display: inline-block;
+            vertical-align: middle;
+        }
+    }
+}
+
+.recent-posts, .recent-projects, .featured-publications {
+    margin-bottom: 4rem;
+    padding: 2rem 0;
+    max-width: 900px; /* Constrain these sections for readability */
+    margin-left: auto;
+    margin-right: auto;
+    
+    &:not(:last-child) {
+        border-bottom: 1px solid rgba(235, 219, 178, 0.1);
+    }
+}
+
+.posts-grid {
+    display: grid;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.post-card {
+    padding: 1.5rem;
+    background-color: var(--bg-light);
+    border-radius: 6px;
+    border-left: 3px solid var(--accent-yellow);
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+    
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(250, 189, 47, 0.2);
+        border-color: rgba(250, 189, 47, 0.4);
+        background-color: rgba(50, 48, 47, 0.8);
+    }
+}
+
+.title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.post-title {
+    margin: 0;
+    
+    a {
+        color: var(--fg-light);
+        font-size: 1.25rem;
+        font-weight: 600;
+    }
+}
+
+.post-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0.75rem 0;
+    font-size: 0.875rem;
+}
+
+.post-date {
+    color: var(--fg-dark);
+    font-family: var(--font-mono);
+}
+
+.reading-time {
+    color: var(--accent-blue);
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    background-color: rgba(131, 165, 152, 0.1);
+    padding: 0.2rem 0.5rem;
+    border-radius: 3px;
+    border: 1px solid rgba(131, 165, 152, 0.3);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    white-space: nowrap;
+    
+    &::before {
+        content: "⏱";
+        font-size: 0.7rem;
+    }
+}
+
+.post-tags, .project-tags {
+    display: flex;
+    gap: 0.5rem;
+    
+    .tag {
+        background-color: rgba(131, 165, 152, 0.2);
+        color: var(--accent-blue);
+        padding: 0.2rem 0.5rem;
+        border-radius: 3px;
+        font-size: 0.75rem;
+        font-family: var(--font-mono);
+    }
+}
+
+.projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.project-card {
+    background-color: var(--bg-light);
+    border-radius: 6px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+    
+    &:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 25px rgba(250, 189, 47, 0.15);
+        border-color: rgba(250, 189, 47, 0.3);
+        background-color: rgba(50, 48, 47, 0.8);
+    }
+}
+
+.project-image {
+    height: 200px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--bg-light);
+    
+    img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+        width: auto;
+        height: auto;
+    }
+}
+
+.project-content {
+    padding: 1.5rem;
+}
+
+.project-title a {
+    color: var(--fg-light);
+    font-size: 1.1rem;
+    font-weight: 600;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+}
+
+.project-summary {
+    margin: 0.75rem 0;
+    color: var(--fg-medium);
+}
+
+.section-footer {
+    text-align: center;
+    margin-top: 2.5rem;
+    
+    .view-all-link {
+        color: var(--accent-yellow);
+        padding: 0.75rem 1.5rem;
+        background-color: var(--bg-light);
+        border-radius: 6px;
+        display: inline-block;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        font-weight: 500;
+        
+        &:hover {
+            background-color: var(--accent-yellow);
+            color: var(--bg-dark);
+            transform: translateY(-2px);
+        }
+    }
+}
+
+.publications-grid {
+    display: grid;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.publication-card {
+    padding: 2rem;
+    background-color: var(--bg-light);
+    border-radius: 8px;
+    border-left: 4px solid var(--accent-blue);
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+    
+    &:hover {
+        transform: translateY(-3px);
+        border-left-color: var(--accent-yellow);
+        border-color: rgba(131, 165, 152, 0.3);
+        box-shadow: 0 6px 20px rgba(131, 165, 152, 0.15);
+        background-color: rgba(50, 48, 47, 0.8);
+    }
+}
+
+.publication-title a {
+    color: var(--fg-light);
+    font-size: 1.25rem;
+    font-weight: 600;
+    text-decoration: none;
+    font-family: var(--font-mono);
+    
+    &:hover {
+        color: var(--accent-yellow);
+    }
+}
+
+.publication-meta {
+    margin: 1rem 0;
+    font-size: 0.9rem;
+}
+
+.publication-authors {
+    color: var(--accent-blue);
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+}
+
+.publication-venue {
+    color: var(--fg-medium);
+    font-style: italic;
+    margin-bottom: 0.25rem;
+}
+
+
+.publication-summary {
+    margin: 1rem 0;
+    color: var(--fg-medium);
+    line-height: 1.6;
+}
+
+.publication-links {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin: 1.25rem 0;
+}
+
+.pub-link {
+    padding: 0.4rem 0.8rem;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 0.8rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    
+    i {
+        font-size: 0.8rem;
+    }
+}
+
+.pdf-link {
+    background-color: var(--accent-red);
+    color: white;
+    
+    &:hover {
+        background-color: rgba(251, 73, 52, 0.8);
+        transform: translateY(-1px);
+    }
+}
+
+.code-link {
+    background-color: var(--fg-dark);
+    color: var(--bg-dark);
+    
+    &:hover {
+        background-color: var(--fg-medium);
+        transform: translateY(-1px);
+    }
+}
+
+.source-link {
+    background-color: var(--accent-purple);
+    color: white;
+    
+    &:hover {
+        background-color: rgba(211, 134, 155, 0.8);
+        transform: translateY(-1px);
+    }
+}
+
+.doi-link {
+    background-color: var(--accent-blue);
+    color: white;
+    
+    &:hover {
+        background-color: rgba(131, 165, 152, 0.8);
+        transform: translateY(-1px);
+    }
+}
+
+.publication-tags {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    
+    .tag {
+        background-color: rgba(131, 165, 152, 0.2);
+        color: var(--accent-blue);
+        padding: 0.2rem 0.5rem;
+        border-radius: 3px;
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .projects-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .social-links {
+        justify-content: center;
+    }
+    
+    .recent-posts, .recent-projects {
+        max-width: none; /* Allow full width on mobile */
+        padding: 1rem 0;
+    }
+    
+    .title-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+}
+</style>
+{{ end }}

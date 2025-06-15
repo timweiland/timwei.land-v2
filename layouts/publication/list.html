@@ -1,0 +1,287 @@
+{{ define "main" }}
+<div class="publication-list">
+    <header class="list-header">
+        <h1 class="list-title">Publications</h1>
+    </header>
+    
+    <div class="publications-container">
+        {{ range .Pages }}
+        <article class="publication-item">
+            <div class="publication-content">
+                <h2 class="publication-title">
+                    <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+                </h2>
+                
+                <div class="publication-meta">
+                    <div class="publication-authors">
+                        {{ if .Params.authors }}
+                        {{ partial "author-list.html" (dict "authors" .Params.authors "author_urls" .Params.author_urls "Site" .Site) }}
+                        {{ end }}
+                    </div>
+                    
+                    <div class="publication-venue">
+                        {{ if .Params.publication }}
+                        {{ .Params.publication | markdownify }} ({{ .Date.Format "2006" }})
+                        {{ end }}
+                    </div>
+                </div>
+                
+                {{ if .Params.summary }}
+                <p class="publication-abstract">{{ .Params.summary }}</p>
+                {{ else if .Summary }}
+                <p class="publication-abstract">{{ .Summary }}</p>
+                {{ end }}
+                
+                <div class="publication-links">
+                    {{ if .Params.url_pdf }}
+                    <a href="{{ .Params.url_pdf }}" class="pub-link pdf-link" target="_blank" rel="noopener">
+                        <i class="fas fa-file-pdf"></i> PDF
+                    </a>
+                    {{ end }}
+                    
+                    {{ if .Params.url_code }}
+                    <a href="{{ .Params.url_code }}" class="pub-link code-link" target="_blank" rel="noopener">
+                        <i class="fab fa-github"></i> Code
+                    </a>
+                    {{ end }}
+                    
+                    {{ if .Params.url_source }}
+                    <a href="{{ .Params.url_source }}" class="pub-link source-link" target="_blank" rel="noopener">
+                        <i class="fas fa-external-link-alt"></i> Paper
+                    </a>
+                    {{ end }}
+                    
+                    {{ if .Params.doi }}
+                    <a href="https://doi.org/{{ .Params.doi }}" class="pub-link doi-link" target="_blank" rel="noopener">
+                        <i class="fas fa-external-link-alt"></i> DOI
+                    </a>
+                    {{ end }}
+                    
+                    {{ if .Params.url_slides }}
+                    <a href="{{ .Params.url_slides }}" class="pub-link slides-link" target="_blank" rel="noopener">
+                        <i class="fas fa-presentation"></i> Slides
+                    </a>
+                    {{ end }}
+                    
+                    {{ $bibPath := printf "%s/cite.bib" .File.Dir }}
+                    {{ if (fileExists (printf "content/%s" $bibPath)) }}
+                    <button class="pub-link bibtex-link" onclick="showBibtexModal('{{ $bibPath }}', '{{ .Title | htmlEscape }}')">
+                        <i class="fas fa-quote-left"></i> Cite
+                    </button>
+                    {{ end }}
+                </div>
+                
+                {{ if .Params.tags }}
+                <div class="publication-tags">
+                    {{ range .Params.tags }}
+                    <span class="tag">{{ . }}</span>
+                    {{ end }}
+                </div>
+                {{ end }}
+            </div>
+        </article>
+        {{ end }}
+    </div>
+</div>
+
+<style>
+.publication-list {
+    max-width: none; /* Use full terminal width */
+}
+
+.list-header {
+    margin-bottom: 3rem;
+    text-align: center;
+}
+
+.list-title {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: var(--fg-light);
+}
+
+.list-description {
+    font-size: 1.1rem;
+    color: var(--fg-medium);
+}
+
+.publications-container {
+    display: grid;
+    gap: 2.5rem;
+}
+
+.publication-item {
+    padding: 2rem;
+    background-color: var(--bg-light);
+    border-radius: 8px;
+    border-left: 4px solid var(--accent-blue);
+    transition: transform 0.2s ease, border-color 0.2s ease;
+    
+    &:hover {
+        transform: translateY(-2px);
+        border-color: var(--accent-yellow);
+    }
+}
+
+.publication-title {
+    margin-bottom: 1rem;
+    
+    a {
+        color: var(--fg-light);
+        font-size: 1.4rem;
+        font-weight: 600;
+        text-decoration: none;
+        font-family: var(--font-mono);
+        
+        &:hover {
+            color: var(--accent-yellow);
+        }
+    }
+}
+
+.publication-meta {
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+}
+
+.publication-authors {
+    color: var(--accent-blue);
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.publication-venue {
+    color: var(--fg-medium);
+    margin-bottom: 0.5rem;
+    font-style: italic;
+}
+
+
+.publication-abstract {
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+    color: var(--fg-medium);
+    max-width: 800px; /* Constrain text for readability */
+}
+
+.publication-links {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+}
+
+.pub-link {
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    
+    i {
+        font-size: 0.875rem;
+    }
+}
+
+.pdf-link {
+    background-color: var(--accent-red);
+    color: white;
+    
+    &:hover {
+        background-color: rgba(251, 73, 52, 0.8);
+        transform: translateY(-1px);
+    }
+}
+
+.code-link {
+    background-color: var(--fg-dark);
+    color: var(--bg-dark);
+    
+    &:hover {
+        background-color: var(--fg-medium);
+        transform: translateY(-1px);
+    }
+}
+
+.doi-link {
+    background-color: var(--accent-blue);
+    color: white;
+    
+    &:hover {
+        background-color: rgba(131, 165, 152, 0.8);
+        transform: translateY(-1px);
+    }
+}
+
+.source-link {
+    background-color: var(--accent-purple);
+    color: white;
+    
+    &:hover {
+        background-color: rgba(211, 134, 155, 0.8);
+        transform: translateY(-1px);
+    }
+}
+
+.slides-link {
+    background-color: var(--accent-orange);
+    color: white;
+    
+    &:hover {
+        background-color: rgba(254, 128, 25, 0.8);
+        transform: translateY(-1px);
+    }
+}
+
+.bibtex-link {
+    background-color: var(--accent-green);
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    
+    &:hover {
+        background-color: rgba(184, 187, 38, 0.8);
+        transform: translateY(-1px);
+    }
+}
+
+.publication-tags {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    
+    .tag {
+        background-color: rgba(250, 189, 47, 0.2);
+        color: var(--accent-yellow);
+        padding: 0.3rem 0.6rem;
+        border-radius: 3px;
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .list-title {
+        font-size: 2rem;
+    }
+    
+    .publication-item {
+        padding: 1.5rem;
+    }
+    
+    .publication-links {
+        gap: 0.75rem;
+    }
+    
+    .pub-link {
+        font-size: 0.8rem;
+        padding: 0.4rem 0.8rem;
+    }
+}
+</style>
+{{ end }}

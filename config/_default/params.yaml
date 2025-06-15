@@ -1,7 +1,4 @@
 # SITE SETUP
-# Guide: https://wowchemy.com/docs/getting-started/
-# Documentation: https://wowchemy.com/docs/
-# This file is formatted using YAML syntax - learn more at https://learnxinyminutes.com/docs/yaml/
 
 # Appearance
 
@@ -17,9 +14,9 @@ marketing:
   seo:
     site_type: Person
     local_business_type: ''
-    org_name: ''
-    description: 'Tim Weiland.'
-    twitter: 'timweiland8'
+    org_name: 'University of Tübingen'
+    description: 'Tim Weiland - PhD student researching scalable probabilistic PDE solvers, machine learning, and Bayesian inference at University of Tübingen. Expert in Gaussian processes, scientific computing, and physics-informed ML.'
+    twitter: ''
   analytics:
     google_analytics: ''
     baidu_tongji: ''

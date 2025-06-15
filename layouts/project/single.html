@@ -1,0 +1,316 @@
+{{ define "main" }}
+<article class="project-single">
+    <header class="project-header">
+        
+        {{ $featured := .Resources.GetMatch "featured*" }}
+        {{ if $featured }}
+        <div class="project-hero">
+            <img src="{{ $featured.RelPermalink }}" alt="{{ .Title }}" loading="lazy">
+        </div>
+        {{ else if .Params.image }}
+        <div class="project-hero">
+            <img src="{{ .Params.image }}" alt="{{ .Title }}" loading="lazy">
+        </div>
+        {{ end }}
+        
+        <h1 class="project-title">{{ .Title }}</h1>
+        
+        <div class="project-meta">
+            <div class="meta-left">
+                <time class="project-date">{{ .Date.Format "2006-01-02" }}</time>
+                {{ if .Params.summary }}
+                <p class="project-summary">{{ .Params.summary }}</p>
+                {{ end }}
+            </div>
+            
+            <div class="meta-right">
+                {{ if .Params.external_link }}
+                <a href="{{ .Params.external_link }}" class="external-link" target="_blank" rel="noopener">
+                    View Project ↗
+                </a>
+                {{ end }}
+                
+                {{ if .Params.url_code }}
+                <a href="{{ .Params.url_code }}" class="code-link" target="_blank" rel="noopener">
+                    Source Code
+                </a>
+                {{ end }}
+            </div>
+        </div>
+        
+        {{ if .Params.tags }}
+        <div class="project-tags">
+            {{ range .Params.tags }}
+            <span class="tag">{{ . }}</span>
+            {{ end }}
+        </div>
+        {{ end }}
+    </header>
+    
+    <div class="project-content">
+        {{ .Content }}
+    </div>
+    
+    <footer class="project-footer">
+        <div class="project-nav">
+            {{ with .PrevInSection }}
+            <a href="{{ .RelPermalink }}" class="project-nav-link project-nav-prev">
+                <span class="nav-direction">← Previous Project</span>
+                <span class="nav-title">{{ .Title }}</span>
+            </a>
+            {{ end }}
+            
+            {{ with .NextInSection }}
+            <a href="{{ .RelPermalink }}" class="project-nav-link project-nav-next">
+                <span class="nav-direction">Next Project →</span>
+                <span class="nav-title">{{ .Title }}</span>
+            </a>
+            {{ end }}
+        </div>
+        
+        <div class="back-to-projects">
+            <a href="/project/" class="back-link">← Back to Projects</a>
+        </div>
+    </footer>
+</article>
+
+<style>
+.project-single {
+    max-width: none; /* Use full terminal width */
+}
+
+.project-header {
+    margin-bottom: 3rem;
+}
+
+
+.project-hero {
+    margin-bottom: 2rem;
+    border-radius: 8px;
+    overflow: hidden;
+    
+    img {
+        width: 100%;
+        height: auto;
+        max-height: 400px;
+        object-fit: cover;
+    }
+}
+
+.project-title {
+    font-size: 2.5rem;
+    line-height: 1.2;
+    margin-bottom: 1.5rem;
+    color: var(--fg-light);
+}
+
+.project-meta {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid rgba(235, 219, 178, 0.1);
+}
+
+.project-date {
+    font-family: var(--font-mono);
+    color: var(--fg-dark);
+    font-size: 0.875rem;
+    display: block;
+    margin-bottom: 1rem;
+}
+
+.project-summary {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: var(--fg-medium);
+}
+
+.meta-right {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.external-link, .code-link {
+    padding: 0.75rem 1.25rem;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 500;
+    text-align: center;
+    transition: all 0.2s ease;
+}
+
+.external-link {
+    background-color: var(--accent-yellow);
+    color: var(--bg-dark);
+    
+    &:hover {
+        background-color: var(--accent-orange);
+        transform: translateY(-2px);
+    }
+}
+
+.code-link {
+    background-color: var(--bg-light);
+    color: var(--accent-blue);
+    border: 1px solid var(--accent-blue);
+    
+    &:hover {
+        background-color: rgba(131, 165, 152, 0.1);
+        transform: translateY(-2px);
+    }
+}
+
+.project-tags {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    
+    .tag {
+        background-color: rgba(131, 165, 152, 0.2);
+        color: var(--accent-blue);
+        padding: 0.4rem 0.8rem;
+        border-radius: 4px;
+        font-family: var(--font-mono);
+        font-size: 0.875rem;
+    }
+}
+
+.project-content {
+    line-height: 1.8;
+    max-width: 800px; /* Constrain text for readability */
+    margin: 0 auto;
+    
+    h2, h3, h4, h5, h6 {
+        margin-top: 2.5rem;
+        margin-bottom: 1rem;
+        
+        &:first-child {
+            margin-top: 0;
+        }
+    }
+    
+    p {
+        margin-bottom: 1.5rem;
+    }
+    
+    img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 6px;
+        margin: 2rem 0;
+    }
+    
+    blockquote {
+        margin: 2rem 0;
+        padding: 1.5rem;
+        background-color: var(--bg-light);
+        border-left: 4px solid var(--accent-yellow);
+        border-radius: 0 6px 6px 0;
+        
+        p:last-child {
+            margin-bottom: 0;
+        }
+    }
+    
+    ul, ol {
+        margin-bottom: 1.5rem;
+        
+        li {
+            margin-bottom: 0.5rem;
+        }
+    }
+}
+
+.project-footer {
+    margin-top: 4rem;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(235, 219, 178, 0.1);
+}
+
+.project-nav {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.project-nav-link {
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem;
+    background-color: var(--bg-light);
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    
+    &:hover {
+        background-color: rgba(250, 189, 47, 0.05);
+        transform: translateY(-2px);
+    }
+    
+    &.project-nav-next {
+        text-align: right;
+    }
+}
+
+.nav-direction {
+    font-size: 0.875rem;
+    color: var(--accent-yellow);
+    margin-bottom: 0.5rem;
+}
+
+.nav-title {
+    color: var(--fg-light);
+    font-weight: 500;
+    font-size: 1.1rem;
+}
+
+.back-to-projects {
+    text-align: center;
+    
+    .back-link {
+        color: var(--accent-yellow);
+        padding: 0.75rem 1.5rem;
+        background-color: var(--bg-light);
+        border-radius: 6px;
+        display: inline-block;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        font-weight: 500;
+        
+        &:hover {
+            background-color: var(--accent-yellow);
+            color: var(--bg-dark);
+            transform: translateY(-2px);
+        }
+    }
+}
+
+@media (max-width: 768px) {
+    .project-title {
+        font-size: 2rem;
+    }
+    
+    .project-meta {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .project-nav {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .project-nav-link.project-nav-next {
+        text-align: left;
+    }
+    
+    .project-nav-link {
+        padding: 1rem;
+    }
+}
+</style>
+{{ end }}

@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="{{ .Site.Language.Lang | default "en-us" }}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    <title>{{ if not .IsHome }}{{ .Title }} | {{ end }}{{ .Site.Title }}</title>
+    
+    {{ if .IsHome }}
+    <meta name="description" content="{{ .Site.Params.description | default "Tim Weiland - PhD student researching scalable probabilistic PDE solvers, machine learning, and Bayesian inference at University of Tübingen." }}">
+    {{ else if eq .Type "publication" }}
+    <meta name="description" content="{{ .Params.summary | default .Summary | truncate 160 }}">
+    {{ else }}
+    <meta name="description" content="{{ .Summary | truncate 160 }}">
+    {{ end }}
+    
+    <!-- SEO Meta Tags -->
+    <meta name="author" content="{{ .Site.Params.author | default "Tim Weiland" }}">
+    <meta name="keywords" content="{{ if .Params.tags }}{{ delimit .Params.tags ", " }}{{ else }}machine learning, probabilistic PDE solvers, Bayesian inference, Gaussian processes, scientific computing{{ end }}">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="{{ .Permalink }}">
+    
+    <!-- Academic/Research specific meta -->
+    {{ if eq .Type "publication" }}
+    {{ if .Params.doi }}
+    <meta name="citation_doi" content="{{ .Params.doi }}">
+    {{ end }}
+    {{ if .Params.authors }}
+    {{ range .Params.authors }}
+    <meta name="citation_author" content="{{ . }}">
+    {{ end }}
+    {{ end }}
+    <meta name="citation_title" content="{{ .Title }}">
+    {{ if .Params.publication }}
+    <meta name="citation_journal_title" content="{{ .Params.publication | plainify }}">
+    {{ end }}
+    <meta name="citation_publication_date" content="{{ .Date.Format "2006/01/02" }}">
+    {{ if .Params.url_pdf }}
+    <meta name="citation_pdf_url" content="{{ .Params.url_pdf }}">
+    {{ end }}
+    {{ end }}
+    
+    <!-- Gruvbox Terminal Scholar Theme -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Academicons for academic icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+    
+    {{ $css := resources.Get "scss/main.scss" | toCSS | minify }}
+    <link rel="stylesheet" href="{{ $css.RelPermalink }}">
+    
+    <!-- MathJax for LaTeX rendering -->
+    <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        processEscapes: true,
+        processEnvironments: true
+      },
+      options: {
+        skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+      }
+    };
+    </script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <!-- Prism.js for syntax highlighting -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{{ "media/icon-32.jpg" | absURL }}">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="{{ if eq .Type "publication" }}article{{ else }}website{{ end }}">
+    <meta property="og:url" content="{{ .Permalink }}">
+    <meta property="og:title" content="{{ if not .IsHome }}{{ .Title }} | {{ end }}{{ .Site.Title }}">
+    <meta property="og:description" content="{{ if .IsHome }}{{ .Site.Params.description | default "Tim Weiland - PhD student researching scalable probabilistic PDE solvers, machine learning, and Bayesian inference." }}{{ else if eq .Type "publication" }}{{ .Params.summary | default .Summary | truncate 160 }}{{ else }}{{ .Summary | truncate 160 }}{{ end }}">
+    <meta property="og:site_name" content="{{ .Site.Title }}">
+    {{ if .Params.image }}
+    <meta property="og:image" content="{{ .Params.image | absURL }}">
+    {{ else }}
+    <meta property="og:image" content="{{ "media/icon-512.jpg" | absURL }}">
+    {{ end }}
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    {{ if eq .Type "publication" }}
+    <meta property="article:author" content="{{ if .Params.authors }}{{ index .Params.authors 0 }}{{ else }}Tim Weiland{{ end }}">
+    <meta property="article:published_time" content="{{ .Date.Format "2006-01-02T15:04:05Z07:00" }}">
+    {{ if .Params.tags }}
+    {{ range .Params.tags }}
+    <meta property="article:tag" content="{{ . }}">
+    {{ end }}
+    {{ end }}
+    {{ end }}
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="{{ .Permalink }}">
+    <meta property="twitter:title" content="{{ if not .IsHome }}{{ .Title }} | {{ end }}{{ .Site.Title }}">
+    <meta property="twitter:description" content="{{ if .IsHome }}{{ .Site.Params.description | default "Tim Weiland - PhD student researching scalable probabilistic PDE solvers, machine learning, and Bayesian inference." }}{{ else if eq .Type "publication" }}{{ .Params.summary | default .Summary | truncate 160 }}{{ else }}{{ .Summary | truncate 160 }}{{ end }}">
+    {{ if .Params.image }}
+    <meta property="twitter:image" content="{{ .Params.image | absURL }}">
+    {{ else }}
+    <meta property="twitter:image" content="{{ "media/icon-512.jpg" | absURL }}">
+    {{ end }}
+    <meta name="twitter:creator" content="@timweiland">
+    <meta name="twitter:site" content="@timweiland">
+    
+    <!-- Structured Data (JSON-LD) -->
+    {{ if .IsHome }}
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "Tim Weiland",
+      "jobTitle": "PhD Student",
+      "affiliation": {
+        "@type": "Organization",
+        "name": "University of Tübingen"
+      },
+      "url": "{{ .Site.BaseURL }}",
+      "sameAs": [
+        {{ $author := .Site.GetPage "/authors/admin" }}
+        {{ if $author.Params.profiles }}
+        {{ range $index, $profile := $author.Params.profiles }}
+        {{ if gt $index 0 }},{{ end }}
+        "{{ $profile.url }}"
+        {{ end }}
+        {{ end }}
+      ],
+      "knowsAbout": [
+        "Machine Learning",
+        "Probabilistic PDE Solvers", 
+        "Bayesian Inference",
+        "Gaussian Processes",
+        "Scientific Computing"
+      ],
+      "alumniOf": {
+        "@type": "Organization",
+        "name": "University of Tübingen"
+      }
+    }
+    </script>
+    {{ else if eq .Type "publication" }}
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "ScholarlyArticle",
+      "headline": "{{ .Title }}",
+      "description": "{{ .Params.summary | default .Summary | truncate 160 }}",
+      "author": [
+        {{ range $index, $author := .Params.authors }}
+        {{ if gt $index 0 }},{{ end }}
+        {
+          "@type": "Person",
+          "name": "{{ $author }}"
+        }
+        {{ end }}
+      ],
+      "datePublished": "{{ .Date.Format "2006-01-02" }}",
+      {{ if .Params.doi }}
+      "doi": "{{ .Params.doi }}",
+      "identifier": "https://doi.org/{{ .Params.doi }}",
+      {{ end }}
+      {{ if .Params.url_pdf }}
+      "url": "{{ .Params.url_pdf }}",
+      {{ end }}
+      "publisher": {
+        "@type": "Organization",
+        "name": "{{ .Params.publication | default "Academic Publication" | plainify }}"
+      },
+      "keywords": "{{ if .Params.tags }}{{ delimit .Params.tags ", " }}{{ end }}",
+      "about": [
+        {{ range $index, $tag := .Params.tags }}
+        {{ if gt $index 0 }},{{ end }}
+        {
+          "@type": "Thing",
+          "name": "{{ $tag }}"
+        }
+        {{ end }}
+      ]
+    }
+    </script>
+    {{ else if eq .Type "post" }}
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      "headline": "{{ .Title }}",
+      "description": "{{ .Summary | truncate 160 }}",
+      "author": {
+        "@type": "Person",
+        "name": "Tim Weiland"
+      },
+      "datePublished": "{{ .Date.Format "2006-01-02T15:04:05Z07:00" }}",
+      "dateModified": "{{ .Lastmod.Format "2006-01-02T15:04:05Z07:00" }}",
+      "url": "{{ .Permalink }}",
+      "publisher": {
+        "@type": "Person",
+        "name": "Tim Weiland"
+      },
+      {{ if .Params.tags }}
+      "keywords": "{{ delimit .Params.tags ", " }}",
+      {{ end }}
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "{{ .Permalink }}"
+      }
+    }
+    </script>
+    {{ end }}
+</head>
+<body>
+
+    <div class="terminal-container">
+        <!-- Terminal Header -->
+        <div class="terminal-header">
+            <div class="terminal-buttons">
+                <div class="btn btn-close"></div>
+                <div class="btn btn-minimize"></div>
+                <div class="btn btn-maximize"></div>
+            </div>
+            <div class="terminal-title">tim@timwei.land:~{{ if ne .Type "page" }}/{{ .Type | default "home" }}{{ end }}$</div>
+        </div>
+        
+        <!-- Terminal Content -->
+        <div class="terminal-content">
+            {{ partial "header.html" . }}
+            
+            <main class="terminal-main">
+                {{ block "main" . }}{{ end }}
+            </main>
+            
+            {{ partial "footer.html" . }}
+        </div>
+    </div>
+    
+    <!-- Terminal cursor animation -->
+    <script>
+        // Simple cursor blink animation
+        setInterval(() => {
+            const cursors = document.querySelectorAll('.terminal-cursor');
+            cursors.forEach(cursor => {
+                cursor.style.opacity = cursor.style.opacity === '0' ? '1' : '0';
+            });
+        }, 600);
+        
+        // Typing effect for prompts
+        function typeWriter(element, text, speed = 50) {
+            let i = 0;
+            element.innerHTML = '';
+            function type() {
+                if (i < text.length) {
+                    element.innerHTML += text.charAt(i);
+                    i++;
+                    setTimeout(type, speed);
+                }
+            }
+            type();
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const typeElements = document.querySelectorAll('.type-effect');
+            typeElements.forEach((element, index) => {
+                setTimeout(() => {
+                    typeWriter(element, element.dataset.text || element.textContent);
+                }, index * 500);
+            });
+        });
+        
+        
+        // Code block copy functionality
+        function addCopyButtons() {
+            const codeBlocks = document.querySelectorAll('pre[class*="language-"], pre code');
+            
+            codeBlocks.forEach((codeBlock, index) => {
+                // Skip if already has copy button
+                if (codeBlock.parentNode.querySelector('.copy-button')) return;
+                
+                // Create copy button
+                const copyButton = document.createElement('button');
+                copyButton.className = 'copy-button';
+                copyButton.innerHTML = `
+                    <span class="copy-icon">📋</span>
+                    <span class="copy-text">copy</span>
+                `;
+                copyButton.setAttribute('aria-label', 'Copy code to clipboard');
+                copyButton.setAttribute('title', 'Copy to clipboard');
+                
+                // Position button relative to the code block
+                const container = codeBlock.tagName === 'PRE' ? codeBlock : codeBlock.parentNode;
+                container.style.position = 'relative';
+                container.appendChild(copyButton);
+                
+                // Add click handler
+                copyButton.addEventListener('click', async () => {
+                    try {
+                        const code = codeBlock.textContent || codeBlock.innerText;
+                        await navigator.clipboard.writeText(code);
+                        
+                        // Visual feedback
+                        copyButton.innerHTML = `
+                            <span class="copy-icon">✓</span>
+                            <span class="copy-text">copied!</span>
+                        `;
+                        copyButton.classList.add('copied');
+                        
+                        // Reset after 2 seconds
+                        setTimeout(() => {
+                            copyButton.innerHTML = `
+                                <span class="copy-icon">📋</span>
+                                <span class="copy-text">copy</span>
+                            `;
+                            copyButton.classList.remove('copied');
+                        }, 2000);
+                        
+                    } catch (err) {
+                        console.error('Failed to copy: ', err);
+                        // Fallback for older browsers
+                        copyButton.innerHTML = `
+                            <span class="copy-icon">❌</span>
+                            <span class="copy-text">failed</span>
+                        `;
+                        setTimeout(() => {
+                            copyButton.innerHTML = `
+                                <span class="copy-icon">📋</span>
+                                <span class="copy-text">copy</span>
+                            `;
+                        }, 2000);
+                    }
+                });
+            });
+        }
+        
+        // Initialize copy buttons when page loads
+        document.addEventListener('DOMContentLoaded', addCopyButtons);
+        
+        // Re-run if content is dynamically loaded (for future compatibility)
+        const observer = new MutationObserver(() => {
+            addCopyButtons();
+        });
+        observer.observe(document.body, { childList: true, subtree: true });
+        
+        // BibTeX modal functionality
+        async function showBibtexModal(bibPath, title) {
+            try {
+                // Fetch the BibTeX content
+                const response = await fetch(`/${bibPath}`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch BibTeX file');
+                }
+                const bibtexContent = await response.text();
+                
+                // Create modal elements
+                const modal = document.createElement('div');
+                modal.className = 'bibtex-modal';
+                modal.innerHTML = `
+                    <div class="modal-backdrop" onclick="closeBibtexModal()"></div>
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>BibTeX Citation</h3>
+                            <button class="modal-close" onclick="closeBibtexModal()" aria-label="Close modal">×</button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="modal-title">${title}</div>
+                            <div class="bibtex-container">
+                                <pre class="bibtex-content">${bibtexContent.trim()}</pre>
+                            </div>
+                            <div class="modal-actions">
+                                <button class="copy-bibtex-btn" onclick="copyBibtex()">
+                                    <span class="copy-icon">📋</span>
+                                    <span class="copy-text">Copy to Clipboard</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                // Add to page and show
+                document.body.appendChild(modal);
+                requestAnimationFrame(() => {
+                    modal.classList.add('show');
+                });
+                
+                // Store bibtex content for copying
+                window.currentBibtex = bibtexContent.trim();
+                
+                // Add escape key listener
+                document.addEventListener('keydown', handleModalEscape);
+                
+            } catch (error) {
+                console.error('Error loading BibTeX:', error);
+                alert('Failed to load BibTeX citation. Please try again.');
+            }
+        }
+        
+        function closeBibtexModal() {
+            const modal = document.querySelector('.bibtex-modal');
+            if (modal) {
+                modal.classList.remove('show');
+                setTimeout(() => {
+                    modal.remove();
+                }, 300);
+                document.removeEventListener('keydown', handleModalEscape);
+            }
+        }
+        
+        function handleModalEscape(e) {
+            if (e.key === 'Escape') {
+                closeBibtexModal();
+            }
+        }
+        
+        async function copyBibtex() {
+            const copyBtn = document.querySelector('.copy-bibtex-btn');
+            if (!copyBtn || !window.currentBibtex) return;
+            
+            try {
+                await navigator.clipboard.writeText(window.currentBibtex);
+                
+                // Visual feedback
+                copyBtn.innerHTML = `
+                    <span class="copy-icon">✓</span>
+                    <span class="copy-text">Copied!</span>
+                `;
+                copyBtn.classList.add('copied');
+                
+                // Reset after 2 seconds
+                setTimeout(() => {
+                    copyBtn.innerHTML = `
+                        <span class="copy-icon">📋</span>
+                        <span class="copy-text">Copy to Clipboard</span>
+                    `;
+                    copyBtn.classList.remove('copied');
+                }, 2000);
+                
+            } catch (err) {
+                console.error('Failed to copy BibTeX:', err);
+                copyBtn.innerHTML = `
+                    <span class="copy-icon">❌</span>
+                    <span class="copy-text">Failed</span>
+                `;
+                setTimeout(() => {
+                    copyBtn.innerHTML = `
+                        <span class="copy-icon">📋</span>
+                        <span class="copy-text">Copy to Clipboard</span>
+                    `;
+                }, 2000);
+            }
+        }
+        
+        // Table of Contents functionality
+        function initTableOfContents() {
+            const toc = document.getElementById('toc');
+            if (!toc) return;
+            
+            const tocLinks = toc.querySelectorAll('a[href^="#"]');
+            const headings = Array.from(document.querySelectorAll('h1, h2, h3, h4, h5, h6'))
+                .filter(heading => heading.id);
+            const progressFill = document.getElementById('toc-progress');
+            const progressText = document.getElementById('toc-progress-text');
+            
+            if (tocLinks.length === 0 || headings.length === 0) return;
+            
+            // Smooth scroll for TOC links
+            tocLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetId = link.getAttribute('href').substring(1);
+                    const targetElement = document.getElementById(targetId);
+                    
+                    if (targetElement) {
+                        targetElement.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+            
+            // Track active section and reading progress
+            function updateTOC() {
+                const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                const documentHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+                const scrollProgress = (scrollTop / documentHeight) * 100;
+                
+                // Update progress bar
+                if (progressFill) {
+                    progressFill.style.width = Math.min(scrollProgress, 100) + '%';
+                }
+                if (progressText) {
+                    progressText.textContent = Math.round(Math.min(scrollProgress, 100)) + '%';
+                }
+                
+                // Find current active section
+                let activeHeading = null;
+                
+                for (let i = headings.length - 1; i >= 0; i--) {
+                    const heading = headings[i];
+                    const rect = heading.getBoundingClientRect();
+                    
+                    if (rect.top <= 100) { // 100px offset for better UX
+                        activeHeading = heading;
+                        break;
+                    }
+                }
+                
+                // Update active TOC link
+                tocLinks.forEach(link => {
+                    link.classList.remove('active');
+                    
+                    if (activeHeading) {
+                        const linkHref = link.getAttribute('href').substring(1);
+                        if (linkHref === activeHeading.id) {
+                            link.classList.add('active');
+                        }
+                    }
+                });
+            }
+            
+            // Throttled scroll handler for performance
+            let tocScrollTimeout;
+            window.addEventListener('scroll', () => {
+                if (tocScrollTimeout) clearTimeout(tocScrollTimeout);
+                tocScrollTimeout = setTimeout(updateTOC, 10);
+            });
+            
+            // Initial update
+            updateTOC();
+        }
+        
+        // Initialize TOC when page loads
+        document.addEventListener('DOMContentLoaded', initTableOfContents);
+    </script>
+</body>
+</html>
