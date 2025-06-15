@@ -1,4 +1,3 @@
 # [My website](https://www.timwei.land)
 
-Based on the [Hugo Academic Theme](https://github.com/wowchemy/starter-hugo-academic).
-
+A Gruvbox terminal-style theme for academics, crafted by Claude Code and @timweiland :)
