@@ -1,4 +1,9 @@
 items:
+  - date: "2025-09-15"
+    type: "academic"
+    icon: "🇫🇮"
+    title: "I am visiting Toni Karvonen's lab in Lappeenranta for seven weeks."
+
   - date: "2025-05-04"
     type: "conference"
     icon: "🏖️"
@@ -23,8 +28,3 @@ items:
     type: "publication"
     icon: "📝"
     title: "Our AISTATS submission on GMRFs for PDEs got accepted!"
-    
-  #- date: "2024-08-05"
-    #type: "professional"
-    #icon: "💼"
-    #title: "Started research internship at DeepMind"
