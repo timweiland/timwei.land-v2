@@ -1,4 +1,9 @@
 items:
+  - date: "2026-05-11"
+    type: "talk"
+    icon: "🇰🇷"
+    title: "I will be co-presenting a tutorial on Probabilistic Numerics this July at ICML 2026 in Seoul: https://blog.icml.cc/2026/04/02/announcing-the-icml-2026-tutorials/"
+
   - date: "2025-09-15"
     type: "academic"
     icon: "🇫🇮"
