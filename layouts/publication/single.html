@@ -166,80 +166,87 @@
 }
 
 .pub-link {
-    padding: 0.75rem 1.25rem;
+    padding: 0.65rem 1.15rem;
     border-radius: 6px;
     text-decoration: none;
     font-weight: 500;
-    transition: all 0.2s ease;
-    display: flex;
+    transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+    display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    
+    background-color: transparent;
+    border: 1px solid currentColor;
+    font-family: var(--font-mono);
+
     i {
         font-size: 1rem;
     }
-}
 
-.pdf-link {
-    background-color: var(--accent-red);
-    color: white;
-    
     &:hover {
-        background-color: rgba(251, 73, 52, 0.8);
-        transform: translateY(-2px);
+        transform: translateY(-1px);
     }
 }
 
-.code-link {
-    background-color: var(--fg-dark);
+/* Primary action — PDF stays filled */
+.pdf-link {
+    background-color: var(--accent-red);
+    border-color: var(--accent-red);
     color: var(--bg-dark);
-    
+
+    &:hover {
+        background-color: rgba(251, 73, 52, 0.85);
+        border-color: rgba(251, 73, 52, 0.85);
+        color: var(--bg-dark);
+    }
+}
+
+/* Outlined variants */
+.code-link {
+    color: var(--fg-medium);
+
     &:hover {
         background-color: var(--fg-medium);
-        transform: translateY(-2px);
+        color: var(--bg-dark);
     }
 }
 
 .doi-link {
-    background-color: var(--accent-blue);
-    color: white;
-    
+    color: var(--accent-blue);
+
     &:hover {
-        background-color: rgba(131, 165, 152, 0.8);
-        transform: translateY(-2px);
+        background-color: var(--accent-blue);
+        color: var(--bg-dark);
     }
 }
 
 .source-link {
-    background-color: var(--accent-purple);
-    color: white;
-    
+    color: var(--accent-purple);
+
     &:hover {
-        background-color: rgba(211, 134, 155, 0.8);
-        transform: translateY(-2px);
+        background-color: var(--accent-purple);
+        color: var(--bg-dark);
     }
 }
 
 .slides-link {
-    background-color: var(--accent-orange);
-    color: white;
-    
+    color: var(--accent-orange);
+
     &:hover {
-        background-color: rgba(254, 128, 25, 0.8);
-        transform: translateY(-2px);
+        background-color: var(--accent-orange);
+        color: var(--bg-dark);
     }
 }
 
 .bibtex-link {
-    background-color: var(--accent-green);
-    color: white;
-    border: none;
+    background-color: transparent;
+    border: 1px solid var(--accent-green);
+    color: var(--accent-green);
     cursor: pointer;
-    font-family: inherit;
-    
+    font-family: var(--font-mono);
+
     &:hover {
-        background-color: rgba(184, 187, 38, 0.8);
-        transform: translateY(-2px);
+        background-color: var(--accent-green);
+        color: var(--bg-dark);
     }
 }
 

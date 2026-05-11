@@ -1,7 +1,10 @@
 {{ define "main" }}
 <div class="post-list">
     <header class="list-header">
-        <h1 class="list-title">Blog Posts</h1>
+        <h1 class="list-title">
+            <span class="list-title-path">~/</span><span class="list-title-name">posts</span>
+        </h1>
+        <span class="list-title-count">{{ len .Pages }} {{ if eq (len .Pages) 1 }}entry{{ else }}entries{{ end }}</span>
     </header>
     
     <div class="posts-container">
@@ -39,15 +42,32 @@
 }
 
 .list-header {
-    margin-bottom: 3rem;
-    text-align: center;
+    margin-bottom: 2.5rem;
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    border-bottom: 1px solid rgba(235, 219, 178, 0.1);
+    padding-bottom: 0.85rem;
+    font-family: var(--font-mono);
 }
 
-
 .list-title {
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
+    font-size: 1.35rem;
+    font-weight: 600;
     color: var(--fg-light);
+    margin: 0;
+    font-family: var(--font-mono);
+}
+
+.list-title-path {
+    color: var(--fg-dark);
+    font-weight: 400;
+}
+
+.list-title-count {
+    color: var(--fg-dark);
+    font-size: 0.82rem;
+    margin-left: auto;
 }
 
 .list-description {

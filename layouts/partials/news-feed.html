@@ -8,11 +8,9 @@
             {{ range first 5 (sort .Site.Data.news.items "date" "desc") }}
             {{ $date := time .date }}
             <div class="news-item">
-                <span class="news-date">[{{ $date.Format "Jan 02 2006" }}]</span> 
-                <div class="news-item-content">
-                    <span class="news-icon">{{ .icon }}</span> 
-                    <span class="news-content">{{ .title | replaceRE "(https?://[^\\s]+)" "<a href=\"$1\" target=\"_blank\" rel=\"noopener\">$1</a>" | safeHTML }}</span>
-                </div>
+                <span class="news-date">[{{ $date.Format "Jan 02 2006" }}]</span>
+                <span class="news-icon">{{ .icon }}</span>
+                <span class="news-content">{{ .title | replaceRE "(https?://[^\\s]+)" "<a href=\"$1\" target=\"_blank\" rel=\"noopener\">$1</a>" | safeHTML }}</span>
             </div>
             {{ end }}
         </div>
