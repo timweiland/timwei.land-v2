@@ -66,23 +66,17 @@
                     {{ end }}
                 </span>
             </div>
-            
-            {{ if .Params.tech_stack }}
-            <div class="info-line">
-                <span class="info-label">Stack</span>
-                <span class="info-value">{{ delimit .Params.tech_stack ", " }}</span>
+
+            {{ if .Params.profiles }}
+            <div class="neofetch-separator">─────────────────</div>
+            <div class="neofetch-links">
+                {{ range .Params.profiles }}
+                <a href="{{ .url }}" class="neofetch-link" target="_blank" rel="noopener" aria-label="{{ .icon }}">
+                    {{ partial "icon.html" . }}
+                </a>
+                {{ end }}
             </div>
             {{ end }}
-            
-            <div class="info-line">
-                <span class="info-label">Focus</span>
-                <span class="info-value">Fundamental ML research & scalable algorithms</span>
-            </div>
-            
-            <div class="info-line">
-                <span class="info-label">Theme</span>
-                <span class="info-value">Gruvbox [Terminal Scholar]</span>
-            </div>
         </div>
     </div>
 </div>
@@ -333,6 +327,37 @@ document.addEventListener('DOMContentLoaded', function() {
 .affiliation-link:hover {
     color: var(--accent-yellow);
     text-decoration: underline;
+}
+
+/* Social icon row at the bottom — replaces neofetch's color swatch row */
+.neofetch-links {
+    display: flex;
+    gap: 1.35rem;
+    margin-top: 0.85rem;
+    align-items: center;
+    font-size: 1.45rem;
+    line-height: 1;
+}
+
+.neofetch-link {
+    color: var(--fg-dark);
+    text-decoration: none;
+    transition: color 0.2s ease, transform 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+
+.neofetch-link:hover {
+    color: var(--accent-yellow);
+    transform: translateY(-1px);
+}
+
+.neofetch-link .custom-icon {
+    width: 1.35rem;
+    height: 1.35rem;
+    display: block;
 }
 
 /* Mobile responsiveness */

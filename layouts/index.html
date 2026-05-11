@@ -5,18 +5,6 @@
         <div class="hero-full-width">
             {{ partial "neofetch-bio.html" . }}
         </div>
-        
-        {{ with .Site.GetPage "/authors/admin" }}
-        {{ if .Params.profiles }}
-        <div class="social-links">
-            {{ range .Params.profiles }}
-            <a href="{{ .url }}" class="social-link" target="_blank" rel="noopener">
-                {{ partial "icon.html" . }} {{ .label }}
-            </a>
-            {{ end }}
-        </div>
-        {{ end }}
-        {{ end }}
     </section>
     
     <!-- News Feed Section -->
