@@ -8,6 +8,9 @@
                 <div class="avatar-fallback">
                     <img src="{{ .Params.avatar | default "authors/admin/avatar.jpg" }}" alt="{{ .Title }}" class="fallback-image">
                 </div>
+                <noscript>
+                    <img src="{{ .Params.avatar | default "authors/admin/avatar.jpg" }}" alt="{{ .Title }}" class="fallback-image">
+                </noscript>
             </div>
         </div>
         
@@ -255,6 +258,10 @@ document.addEventListener('DOMContentLoaded', function() {
     max-height: 300px;
     overflow: hidden;
     /* Colors will be applied inline per character */
+}
+
+.avatar-fallback {
+    display: none; /* hidden by default; JS reveals on conversion failure */
 }
 
 .fallback-image {
