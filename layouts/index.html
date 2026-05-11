@@ -32,6 +32,17 @@
         <div class="publications-grid">
             {{ range first 3 $featuredPubs }}
             <article class="publication-card">
+                <a href="{{ .RelPermalink }}" class="publication-thumb" aria-label="{{ .Title }}">
+                    {{ $featured := .Resources.GetMatch "featured*" }}
+                    {{ if $featured }}
+                    {{ $thumb := $featured.Fit "360x240 q85" }}
+                    <img src="{{ $thumb.RelPermalink }}" alt="{{ .Title }}" loading="lazy">
+                    {{ else }}
+                    <div class="publication-thumb-placeholder">
+                        <i class="fas fa-image"></i>
+                    </div>
+                    {{ end }}
+                </a>
                 <div class="publication-content">
                     <h3 class="publication-title">
                         <a href="{{ .RelPermalink }}">{{ .Title }}</a>
@@ -88,13 +99,6 @@
                         {{ end }}
                     </div>
                     
-                    {{ if .Params.tags }}
-                    <div class="publication-tags">
-                        {{ range first 3 .Params.tags }}
-                        <span class="tag">{{ . }}</span>
-                        {{ end }}
-                    </div>
-                    {{ end }}
                 </div>
             </article>
             {{ end }}
@@ -102,42 +106,6 @@
         
         <div class="section-footer">
             <a href="/publication/" class="view-all-link">View All Publications →</a>
-        </div>
-    </section>
-    {{ end }}
-    
-    <!-- Recent Posts Section -->
-    {{ $posts := where .Site.RegularPages "Type" "post" }}
-    {{ if $posts }}
-    <section class="recent-posts">
-        <h2 class="section-heading">Recent Posts</h2>
-        
-        <div class="posts-grid">
-            {{ range first 3 $posts }}
-            <article class="post-card">
-                <div class="title-row">
-                    <h3 class="post-title">
-                        <a href="{{ .RelPermalink }}">{{ .Title }}</a>
-                    </h3>
-                    <span class="reading-time">{{ .ReadingTime }} min read</span>
-                </div>
-                <div class="post-meta">
-                    <time class="post-date">{{ .Date.Format "2006-01-02" }}</time>
-                    {{ if .Params.tags }}
-                    <div class="post-tags">
-                        {{ range first 3 .Params.tags }}
-                        <span class="tag">{{ . }}</span>
-                        {{ end }}
-                    </div>
-                    {{ end }}
-                </div>
-                <p class="post-summary">{{ if .Params.summary }}{{ .Params.summary }}{{ else }}{{ .Summary }}{{ end }}</p>
-            </article>
-            {{ end }}
-        </div>
-        
-        <div class="section-footer">
-            <a href="/post/" class="view-all-link">View All Posts →</a>
         </div>
     </section>
     {{ end }}
@@ -210,11 +178,20 @@
 
 
 .section-heading {
-    font-size: 2rem;
+    font-size: 1.5rem;
     color: var(--fg-light);
     margin-bottom: 2rem;
     font-family: var(--font-mono);
-    text-align: center;
+    text-align: left;
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+
+    &::before {
+        content: "$";
+        color: var(--accent-yellow);
+        font-weight: 700;
+    }
 }
 
 
@@ -229,7 +206,7 @@
         padding: 0.75rem 1.25rem;
         background-color: var(--bg-light);
         border-radius: 6px;
-        transition: all 0.3s ease;
+        transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
         text-decoration: none;
         color: var(--fg-medium);
         font-weight: 500;
@@ -237,12 +214,11 @@
         align-items: center;
         gap: 0.5rem;
         border: 1px solid transparent;
-        
+
         &:hover {
             background-color: var(--accent-yellow);
             color: var(--bg-dark);
-            transform: translateY(-3px);
-            box-shadow: 0 6px 15px rgba(250, 189, 47, 0.4);
+            transform: translateY(-2px);
             border-color: rgba(250, 189, 47, 0.6);
         }
         
@@ -283,13 +259,12 @@
     padding: 1.5rem;
     background-color: var(--bg-light);
     border-radius: 6px;
-    border-left: 3px solid var(--accent-yellow);
-    transition: all 0.3s ease;
     border: 1px solid transparent;
-    
+    border-left: 3px solid var(--accent-yellow);
+    transition: transform 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+
     &:hover {
         transform: translateY(-2px);
-        box-shadow: 0 4px 15px rgba(250, 189, 47, 0.2);
         border-color: rgba(250, 189, 47, 0.4);
         background-color: rgba(50, 48, 47, 0.8);
     }
@@ -369,13 +344,12 @@
     background-color: var(--bg-light);
     border-radius: 6px;
     overflow: hidden;
-    transition: all 0.3s ease;
     border: 1px solid transparent;
-    
+    transition: transform 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+
     &:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 8px 25px rgba(250, 189, 47, 0.15);
-        border-color: rgba(250, 189, 47, 0.3);
+        transform: translateY(-2px);
+        border-color: rgba(250, 189, 47, 0.4);
         background-color: rgba(50, 48, 47, 0.8);
     }
 }
@@ -410,9 +384,13 @@
     hyphens: auto;
 }
 
-.project-summary {
+.project-summary,
+.post-summary {
     margin: 0.75rem 0;
     color: var(--fg-medium);
+    font-size: 0.95rem;
+    line-height: 1.55;
+    max-width: 70ch;
 }
 
 .section-footer {
@@ -425,10 +403,10 @@
         background-color: var(--bg-light);
         border-radius: 6px;
         display: inline-block;
-        transition: all 0.2s ease;
+        transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease;
         text-decoration: none;
         font-weight: 500;
-        
+
         &:hover {
             background-color: var(--accent-yellow);
             color: var(--bg-dark);
@@ -444,20 +422,63 @@
 }
 
 .publication-card {
-    padding: 2rem;
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    gap: 1.5rem;
+    padding: 1.5rem;
     background-color: var(--bg-light);
-    border-radius: 8px;
-    border-left: 4px solid var(--accent-blue);
-    transition: all 0.3s ease;
+    border-radius: 6px;
     border: 1px solid transparent;
-    
+    border-left: 3px solid var(--accent-yellow);
+    transition: transform 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+
     &:hover {
-        transform: translateY(-3px);
-        border-left-color: var(--accent-yellow);
-        border-color: rgba(131, 165, 152, 0.3);
-        box-shadow: 0 6px 20px rgba(131, 165, 152, 0.15);
+        transform: translateY(-2px);
+        border-color: rgba(250, 189, 47, 0.4);
         background-color: rgba(50, 48, 47, 0.8);
     }
+}
+
+.publication-card .publication-thumb {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 180px;
+    height: 120px;
+    border-radius: 6px;
+    overflow: hidden;
+    background-color: var(--bg-medium);
+    align-self: start;
+    padding: 0.4rem;
+
+    img {
+        max-width: 100%;
+        max-height: 100%;
+        width: auto;
+        height: auto;
+        object-fit: contain;
+        display: block;
+    }
+}
+
+.publication-card .publication-thumb-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px dashed rgba(235, 219, 178, 0.18);
+    border-radius: 6px;
+    color: var(--fg-dark);
+    opacity: 0.5;
+
+    i {
+        font-size: 1.75rem;
+    }
+}
+
+.publication-card .publication-content {
+    min-width: 0;
 }
 
 .publication-title a {
@@ -493,7 +514,9 @@
 .publication-summary {
     margin: 1rem 0;
     color: var(--fg-medium);
-    line-height: 1.6;
+    font-size: 0.95rem;
+    line-height: 1.55;
+    max-width: 70ch;
 }
 
 .publication-links {
@@ -504,58 +527,66 @@
 }
 
 .pub-link {
-    padding: 0.4rem 0.8rem;
+    padding: 0.35rem 0.8rem;
     border-radius: 4px;
     text-decoration: none;
     font-size: 0.8rem;
     font-weight: 500;
-    transition: all 0.2s ease;
-    display: flex;
+    transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+    display: inline-flex;
     align-items: center;
     gap: 0.4rem;
-    
+    background-color: transparent;
+    border: 1px solid currentColor;
+    font-family: var(--font-mono);
+
     i {
         font-size: 0.8rem;
     }
-}
 
-.pdf-link {
-    background-color: var(--accent-red);
-    color: white;
-    
     &:hover {
-        background-color: rgba(251, 73, 52, 0.8);
         transform: translateY(-1px);
     }
 }
 
-.code-link {
-    background-color: var(--fg-dark);
+/* Primary action — PDF stays filled */
+.pdf-link {
+    background-color: var(--accent-red);
+    border-color: var(--accent-red);
     color: var(--bg-dark);
-    
+
+    &:hover {
+        background-color: rgba(251, 73, 52, 0.85);
+        border-color: rgba(251, 73, 52, 0.85);
+        color: var(--bg-dark);
+    }
+}
+
+/* Outlined / ghost variants — fill on hover */
+.code-link {
+    color: var(--fg-medium);
+
     &:hover {
         background-color: var(--fg-medium);
-        transform: translateY(-1px);
+        color: var(--bg-dark);
     }
 }
 
 .source-link {
-    background-color: var(--accent-purple);
-    color: white;
-    
+    color: var(--accent-purple);
+
     &:hover {
-        background-color: rgba(211, 134, 155, 0.8);
-        transform: translateY(-1px);
+        background-color: var(--accent-purple);
+        color: var(--bg-dark);
     }
 }
 
 .doi-link {
-    background-color: var(--accent-blue);
-    color: white;
-    
+    color: var(--accent-blue);
+
     &:hover {
-        background-color: rgba(131, 165, 152, 0.8);
-        transform: translateY(-1px);
+        background-color: var(--accent-blue);
+        color: var(--bg-dark);
     }
 }
 
@@ -592,6 +623,16 @@
         flex-direction: column;
         align-items: flex-start;
         gap: 0.5rem;
+    }
+
+    .publication-card {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .publication-card .publication-thumb {
+        width: 100%;
+        height: 160px;
     }
 }
 </style>

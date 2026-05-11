@@ -1,12 +1,26 @@
 {{ define "main" }}
 <div class="publication-list">
     <header class="list-header">
-        <h1 class="list-title">Publications</h1>
+        <h1 class="list-title">
+            <span class="list-title-path">~/</span><span class="list-title-name">publications</span>
+        </h1>
+        <span class="list-title-count">{{ len .Pages }} {{ if eq (len .Pages) 1 }}entry{{ else }}entries{{ end }}</span>
     </header>
     
     <div class="publications-container">
         {{ range .Pages }}
         <article class="publication-item">
+            <a href="{{ .RelPermalink }}" class="publication-thumb" aria-label="{{ .Title }}">
+                {{ $featured := .Resources.GetMatch "featured*" }}
+                {{ if $featured }}
+                {{ $thumb := $featured.Fit "360x240 q85" }}
+                <img src="{{ $thumb.RelPermalink }}" alt="{{ .Title }}" loading="lazy">
+                {{ else }}
+                <div class="publication-thumb-placeholder">
+                    <i class="fas fa-image"></i>
+                </div>
+                {{ end }}
+            </a>
             <div class="publication-content">
                 <h2 class="publication-title">
                     <a href="{{ .RelPermalink }}">{{ .Title }}</a>
@@ -71,13 +85,6 @@
                     {{ end }}
                 </div>
                 
-                {{ if .Params.tags }}
-                <div class="publication-tags">
-                    {{ range .Params.tags }}
-                    <span class="tag">{{ . }}</span>
-                    {{ end }}
-                </div>
-                {{ end }}
             </div>
         </article>
         {{ end }}
@@ -90,14 +97,32 @@
 }
 
 .list-header {
-    margin-bottom: 3rem;
-    text-align: center;
+    margin-bottom: 2.5rem;
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    border-bottom: 1px solid rgba(235, 219, 178, 0.1);
+    padding-bottom: 0.85rem;
+    font-family: var(--font-mono);
 }
 
 .list-title {
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
+    font-size: 1.35rem;
+    font-weight: 600;
     color: var(--fg-light);
+    margin: 0;
+    font-family: var(--font-mono);
+}
+
+.list-title-path {
+    color: var(--fg-dark);
+    font-weight: 400;
+}
+
+.list-title-count {
+    color: var(--fg-dark);
+    font-size: 0.82rem;
+    margin-left: auto;
 }
 
 .list-description {
@@ -111,16 +136,61 @@
 }
 
 .publication-item {
-    padding: 2rem;
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    gap: 1.5rem;
+    padding: 1.5rem;
     background-color: var(--bg-light);
     border-radius: 8px;
     border-left: 4px solid var(--accent-blue);
     transition: transform 0.2s ease, border-color 0.2s ease;
-    
+
     &:hover {
         transform: translateY(-2px);
         border-color: var(--accent-yellow);
     }
+}
+
+.publication-thumb {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 180px;
+    height: 120px;
+    border-radius: 6px;
+    overflow: hidden;
+    background-color: var(--bg-medium);
+    align-self: start;
+    padding: 0.4rem;
+
+    img {
+        max-width: 100%;
+        max-height: 100%;
+        width: auto;
+        height: auto;
+        object-fit: contain;
+        display: block;
+    }
+}
+
+.publication-thumb-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px dashed rgba(235, 219, 178, 0.18);
+    border-radius: 6px;
+    color: var(--fg-dark);
+    opacity: 0.5;
+
+    i {
+        font-size: 1.75rem;
+    }
+}
+
+.publication-content {
+    min-width: 0; /* prevent grid overflow on long titles */
 }
 
 .publication-title {
@@ -172,81 +242,88 @@
 }
 
 .pub-link {
-    padding: 0.5rem 1rem;
+    padding: 0.4rem 0.9rem;
     border-radius: 4px;
     text-decoration: none;
     font-size: 0.875rem;
     font-weight: 500;
-    transition: all 0.2s ease;
-    display: flex;
+    transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+    display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    
+    background-color: transparent;
+    border: 1px solid currentColor;
+    font-family: var(--font-mono);
+
     i {
         font-size: 0.875rem;
     }
-}
 
-.pdf-link {
-    background-color: var(--accent-red);
-    color: white;
-    
     &:hover {
-        background-color: rgba(251, 73, 52, 0.8);
         transform: translateY(-1px);
     }
 }
 
-.code-link {
-    background-color: var(--fg-dark);
+/* Primary action — PDF stays filled */
+.pdf-link {
+    background-color: var(--accent-red);
+    border-color: var(--accent-red);
     color: var(--bg-dark);
-    
+
+    &:hover {
+        background-color: rgba(251, 73, 52, 0.85);
+        border-color: rgba(251, 73, 52, 0.85);
+        color: var(--bg-dark);
+    }
+}
+
+/* Outlined variants */
+.code-link {
+    color: var(--fg-medium);
+
     &:hover {
         background-color: var(--fg-medium);
-        transform: translateY(-1px);
+        color: var(--bg-dark);
     }
 }
 
 .doi-link {
-    background-color: var(--accent-blue);
-    color: white;
-    
+    color: var(--accent-blue);
+
     &:hover {
-        background-color: rgba(131, 165, 152, 0.8);
-        transform: translateY(-1px);
+        background-color: var(--accent-blue);
+        color: var(--bg-dark);
     }
 }
 
 .source-link {
-    background-color: var(--accent-purple);
-    color: white;
-    
+    color: var(--accent-purple);
+
     &:hover {
-        background-color: rgba(211, 134, 155, 0.8);
-        transform: translateY(-1px);
+        background-color: var(--accent-purple);
+        color: var(--bg-dark);
     }
 }
 
 .slides-link {
-    background-color: var(--accent-orange);
-    color: white;
-    
+    color: var(--accent-orange);
+
     &:hover {
-        background-color: rgba(254, 128, 25, 0.8);
-        transform: translateY(-1px);
+        background-color: var(--accent-orange);
+        color: var(--bg-dark);
     }
 }
 
 .bibtex-link {
-    background-color: var(--accent-green);
-    color: white;
-    border: none;
+    background-color: transparent;
+    border: 1px solid var(--accent-green);
+    color: var(--accent-green);
     cursor: pointer;
-    font-family: inherit;
-    
+    font-family: var(--font-mono);
+
     &:hover {
-        background-color: rgba(184, 187, 38, 0.8);
-        transform: translateY(-1px);
+        background-color: var(--accent-green);
+        color: var(--bg-dark);
     }
 }
 
@@ -269,15 +346,22 @@
     .list-title {
         font-size: 2rem;
     }
-    
+
     .publication-item {
-        padding: 1.5rem;
+        grid-template-columns: 1fr;
+        gap: 1rem;
+        padding: 1.25rem;
     }
-    
+
+    .publication-thumb {
+        width: 100%;
+        height: 160px;
+    }
+
     .publication-links {
         gap: 0.75rem;
     }
-    
+
     .pub-link {
         font-size: 0.8rem;
         padding: 0.4rem 0.8rem;
